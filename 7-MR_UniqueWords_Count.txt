@@ -1,0 +1,90 @@
+
+import os
+import re
+import pandas as pd
+
+os.listdir()
+
+def mapper(review):
+    review = review.strip()
+    review = review.lower()
+    review = re.findall("[a-z]+", review)
+    return review
+
+def reduce(review):
+    word_count = {}
+    for word in review:
+        word_count[word] = review.count(word)
+    return word_count
+
+def map_reduce(file_name):
+    with open(file_name, "r") as file:
+        review = file.read()
+        
+    mapped = mapper(review)
+    reducer = reduce(mapped)
+    
+    x1, x2 = [], []
+    for word, count in reducer.items():
+        x1.append(word)
+        x2.append(count)
+    return x1, x2
+
+y1, y2 = map_reduce("sample.txt")
+
+dict1 = {"count":y2}
+pd.DataFrame(dict1, index=y1)
+
+****************************Create a txt file name sample.txt in same Folder***************************************
+Hello my name is Aryan
+My full name is Aryan Chabukswar
+Hello to you too
+Nice to meet you
+My roll number is 11
+
+
+Imports the os module used for interacting with the operating system.
+
+Imports the re module used for regular expression operations to process and extract patterns from text.
+
+Imports the pandas library as pd for handling tabular data structures like DataFrames.
+
+Lists all files and directories in the current folder (used to check if the file exists, though its output isn't stored or printed).
+
+Defines the mapper function that processes raw text into cleaned lowercase words.
+
+Removes any leading or trailing spaces from the input text.
+
+Converts the text to lowercase to normalize for consistent processing.
+
+Uses regular expressions to extract only words consisting of lowercase letters from the text, ignoring numbers and punctuation.
+
+Returns the list of cleaned words from the mapper function.
+
+Defines the reduce function that counts the frequency of each word in the list.
+
+Initializes an empty dictionary to store word frequencies.
+
+Loops over each word in the list and assigns its count (number of times it appears in the list) to the dictionary.
+
+Returns the dictionary containing words and their respective counts.
+
+Defines the map_reduce function that combines both mapping and reducing steps on the file content.
+
+Opens the specified file in read mode and stores its contents in a variable.
+
+Passes the file content to the mapper function to get a list of cleaned words.
+
+Passes the cleaned words to the reduce function to get a word frequency dictionary.
+
+Initializes two empty lists to store the words and their corresponding counts separately.
+
+Iterates through the word frequency dictionary and appends words to one list and their counts to another.
+
+Returns the two lists: one containing the words and the other containing the corresponding counts.
+
+Calls the map_reduce function with the file "sample.txt" and stores the returned lists into y1 and y2.
+
+Creates a dictionary using the second list (y2) as values with the first list (y1) as index.
+
+Converts the dictionary into a pandas DataFrame to neatly display the words and their frequencies in tabular form.

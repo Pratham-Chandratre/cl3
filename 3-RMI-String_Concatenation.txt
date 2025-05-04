@@ -1,0 +1,41 @@
+server
+
+import Pyro4
+@Pyro4.expose  #The @Pyro4.expose decorator tells Pyro4 that this class and its method can be used remotely.
+class stringconcatenator:
+	def concatenate(self,str1,str2):
+		return str1+str2
+
+daemon=Pyro4.Daemon()  #This acts like a background server waiting for requests from clients.
+uri=daemon.register(stringconcatenator)
+print(uri)  #Pyro returns a URI (Uniform Resource Identifier), which is like the address that the client needs to connect to this server object.
+
+daemon.requestLoop()
+
+client
+
+import Pyro4
+
+uri=input("enter uri of server")
+concatenator=Pyro4.Proxy(uri)  #Creates a proxy object using that URI. This proxy acts like the remote object, but is used locally.
+
+str1=input("enter string 1")
+str2=input("enter string 2")
+
+result=concatenator.concatenate(str1,str2)
+print(result)
+
+# 8. RMI (Remote Method Invocation) is a Java-specific technology that allows objects in one 
+# Java Virtual Machine (JVM) to invoke methods on objects in another JVM, making remote 
+# communication between Java programs easier. 
+# 9. The architecture of an RMI-based distributed application involves clients invoking methods on 
+# remote objects located on servers. RMI handles the communication between the client and 
+# server transparently to the programmer. 
+# 10. RMI offers ease of use and integration with Java objects but may suffer from compatibility 
+# issues with non-Java systems. Other technologies like REST or messaging systems offer more 
+# interoperability but may require more effort to set up. 
+# 11. In RMI, stubs act as proxies for remote objects on the client side, while skeletons handle 
+# incoming requests on the server side. 
+# 12. Marshaling is the process of converting data into a format that can be transmitted over a 
+# network, while unmarshaling is the reverse process of converting received data back into its 
+# original format. 

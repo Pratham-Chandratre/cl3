@@ -1,0 +1,62 @@
+import numpy as np
+
+# Define the objective function (fitness function)
+def objective_function(x):
+    return np.sum(x**2)
+
+# Clonal Selection Algorithm
+def clonal_selection_algorithm(num_antibodies, num_dimensions, search_space, num_generations, num_clones, clone_factor, mutation_rate):
+    # This is the main function for the algorithm.
+
+    # It takes parameters like:
+
+    # num_antibodies: initial solutions
+
+    # num_dimensions: how many variables to optimize
+
+    # search_space: range for each variable, e.g., [-5, 5]
+
+    # num_generations: how many iterations to run
+
+    # num_clones: how many clones per antibody
+
+    # clone_factor: affects how many clones good antibodies get
+
+    # mutation_rate: probability of mutation
+
+    antibodies = np.random.uniform(search_space[:, 0], search_space[:, 1], size=(num_antibodies, num_dimensions))
+    # Randomly generates the initial population of antibodies (solutions).
+
+    # Each solution has num_dimensions values in the given search_space.
+
+    for generation in range(num_generations): #Starts the main evolution loop. It will repeat for num_generations.
+        fitness = np.array([objective_function(antibody) for antibody in antibodies])  # Calculates the fitness (objective value) of each antibody.
+        # Each antibody is cloned based on its fitness:Better antibodies get more clones. 1 / (1 + fitness * clone_factor) ensures good antibodies (low fitness) get more clones.np.repeat() duplicates antibodies accordingly.
+        clones = np.repeat(antibodies, np.round(num_clones * (1 / (1 + fitness * clone_factor))).astype(int), axis=0) 
+        # Generates a boolean mask where True means the gene (dimension) will be mutated.
+        mutation_mask = np.random.rand(*clones.shape) < mutation_rate
+        # Generates random mutation values between -0.5 and 0.5, scaled by the variable's range.This ensures mutations are appropriately sized for the search space.
+        mutation_amounts = np.random.uniform(-0.5, 0.5, size=clones.shape) * (search_space[:, 1] - search_space[:, 0])
+        # Applies the mutations only where mutation_mask == True.np.clip() ensures that values remain within the search_space.
+        mutated_clones = np.clip(clones + mutation_mask * mutation_amounts, search_space[:, 0], search_space[:, 1])
+        # Combines the original antibodies and the mutated clones into a single population.
+        combined_population = np.vstack((antibodies, mutated_clones))
+        # Evaluates fitness for all individuals in the combined population.
+        fitness_combined = np.array([objective_function(antibody) for antibody in combined_population])
+        # Sorts individuals by fitness (lowest first) and keeps the top num_antibodies.These become the population for the next generation.
+        antibodies = combined_population[np.argsort(fitness_combined)][:num_antibodies]
+
+    return antibodies[0] #Returns the best antibody (solution) after all generations.
+
+
+best_solution = clonal_selection_algorithm(50, 3, np.array([[-5,5]]* 3), 100, 10,0.1, 0.1)
+print("Best Solution:", best_solution)
+print("Objective Value:", objective_function(best_solution))
+
+# 18. The clonal selection algorithm is a computational optimization technique inspired by the 
+# immune system's ability to produce antibodies to combat pathogens. 
+# 19. Optimization involves finding the best solution to a problem given certain constraints. 
+# Optimization algorithms are techniques used to find this best solution. 
+# 20. The Clonal Selection Algorithm works by iteratively improving a population of candidate 
+# solutions by mimicking the process of clonal selection and antibody production in the immune 
+# system. 

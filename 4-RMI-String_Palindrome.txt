@@ -1,0 +1,55 @@
+
+********************* CLIENT *****************************************
+
+import Pyro4
+
+uri = input("enter uri of server")
+is_palindrome_checker = Pyro4.Proxy(uri)
+
+string_input = input("Enter string : ")
+flag = is_palindrome_checker.is_palindrome(string_input)
+
+if flag:
+    print("Is a palindrome")
+else:
+    print("Not a palindrome")
+
+
+**************************SERVER *************************************
+import Pyro4
+@Pyro4.expose
+
+class PalindromeChecker():
+    def is_palindrome(self, string):
+        string = string.lower()
+        return string==string[::-1]
+    
+daemon = Pyro4.Daemon()
+uri = daemon.register(PalindromeChecker)
+print(uri)
+daemon.requestLoop()  #Starts the event loop, keeping the server running and waiting for client requests.
+
+
+
+Imports the Pyro4 module used for remote method invocation in Python.
+
+Pyro allows objects in one Python program to call methods on objects in another program (even on a different machine).
+
+This decorator makes the class/method accessible remotely.
+
+Without @Pyro4.expose, the method cannot be called from the client.
+
+Defines a class called PalindromeChecker which will hold our logic to check for palindromes.
+
+is_palindrome method takes a string, converts it to lowercase, and checks if it is the same as its reverse.
+
+string[::-1] is Python slicing to reverse the string.
+
+Creates a Pyro daemon, which is a server process that listens for remote calls.
+
+Registers the PalindromeChecker object with the daemon.
+
+It returns a URI (Uniform Resource Identifier), which the client will use to connect.
+
+Prints the URI so you can copy it and paste it into the client when prompted.
+

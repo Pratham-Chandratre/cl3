@@ -1,0 +1,74 @@
+*************************** CLIENT **************************************
+import xmlrpc.client
+
+# Create an RPC proxy
+proxy = xmlrpc.client.ServerProxy("http://localhost:8000/")
+
+# Main program loop
+while True:
+    choice = input("""
+    Choose an operation:
+    1. Addition
+    2. Subtraction
+    3. Multiplication
+    4. Division
+    5. Exit
+    Enter your choice: """)
+    
+    if choice == '5':
+        break
+    
+    if choice not in ['1', '2', '3', '4']:
+        print("Invalid choice. Please enter a valid option.")
+        continue
+    
+    x = float(input("Enter the first number: "))
+    y = float(input("Enter the second number: "))
+
+    # Execute the chosen operation
+    result = getattr(proxy, ['add', 'subtract', 'multiply', 'divide'][int(choice) - 1])(x, y)
+    print("Result:", result)
+
+*************************************** SERVER *****************************************************
+from xmlrpc.server import SimpleXMLRPCServer
+
+def add(x,y):return x+y
+def subtract(x,y):return x-y
+def multiply(x,y):return x*y
+def divide(x,y):
+    if y!=0:
+        return x/y
+    else:
+        raise ZeroDivisionError("Can not divide by 0")
+        
+with SimpleXMLRPCServer(("localhost",8000)) as server:
+    print("Server is active")
+    
+        
+    for func in [add,subtract,multiply,divide]:
+        server.register_function(func,func.__name__)
+        
+    server.serve_forever()
+
+
+# 1. RPC (Remote Procedure Call) is a way for programs on different computers to talk to each 
+# other over a network. It works like a regular function call but it happens between processes 
+# running on different machines. It helps distributed systems communicate by allowing one 
+# program to call a function on another program running on a different machine. 
+# 2. In an RPC system, there are typically two main components: the client and the server. The 
+# client sends a request to the server, which executes the requested procedure and sends back 
+# the result to the client. 
+# 3. Client-server interaction involves the client sending a request to the server, which then 
+# processes the request and sends a response back to the client. This interaction follows a 
+# specific protocol, such as HTTP or TCP/IP, to ensure communication between the client and 
+# server. 
+# 4. Scalability and load balancing in distributed applications involve distributing incoming 
+# requests evenly across multiple servers to prevent any single server from becoming overloaded. 
+# Techniques like load balancers and clustering help manage increased traffic and maintain 
+# system performance. 
+# 5. RPC offers simplicity and ease of use, but it may suffer from performance issues and tight 
+# coupling between client and server. Other protocols like REST or messaging systems offer more 
+# flexibility but might require more effort to set up and maintain. 
+# 6. Socket programming is a way to enable communication between processes on different 
+# computers. It allows processes to send and receive data over a network using sockets, which 
+# are endpoints for communication. 

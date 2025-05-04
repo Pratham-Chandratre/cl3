@@ -1,0 +1,118 @@
+# What does this code do?
+# It creates a small load balancer that has a list of servers.
+
+# It simulates 10 client requests.
+
+# For each request, it randomly selects a server to handle the request.
+
+# It then prints out which server handled which request.
+
+
+
+import random
+class LoadBalancer:
+    def __init__(self, servers):  # Constructor to initialize the load balancer with a list of servers
+        self.servers = servers
+
+    def random_selection(self):  #This method randomly selects one server from the list using random.choice().
+        return random.choice(self.servers)
+
+def simulate_client_requests(load_balancer, num_requests):
+    for i in range(num_requests):
+        print(f"Request {i+1}: ", end="")
+        # Using Random algorithm for load balancing
+        server_random = load_balancer.random_selection()
+        print(f"Random - Server {server_random}")
+
+servers = ["Server A", "Server B", "Server C"]
+# Create a LoadBalancer instance
+load_balancer = LoadBalancer(servers)
+# Simulate 10 client requests
+simulate_client_requests(load_balancer, 10)
+
+
+
+# 💡 What is Load Balancing?
+# Load balancing is the process of distributing incoming network requests or tasks to multiple servers so that:
+
+# No single server is overloaded.
+
+# Resources are used efficiently.
+
+# The system gives faster response time.
+
+# It ensures high availability and fault tolerance.
+
+# ⚙️ Common Load Balancing Algorithms:
+# 1️⃣ Round Robin:
+# Think of a circle.
+
+# The first request goes to Server 1, the next to Server 2, and so on.
+
+# After the last server, it starts again from the first server.
+
+# It is simple and fair.
+
+# Example:
+# If 3 servers are available and 5 clients send requests, the order will be:
+# S1 → S2 → S3 → S1 → S2
+
+# 2️⃣ Random:
+# Each incoming request is sent to a random server.
+
+# It’s simple, but may not be balanced over time.
+
+# Example:
+# Request 1 → S2
+# Request 2 → S1
+# Request 3 → S2
+# Request 4 → S3
+# Request 5 → S2
+
+# 3️⃣ Least Connections:
+# Assigns request to the server that is currently handling the fewest connections.
+
+# Helps in balancing based on real-time server load.
+
+# Example:
+# If S1 has 2 connections, S2 has 1, and S3 has 3, then next request goes to S2.
+
+# 4️⃣ Weighted Round Robin:
+# Servers are assigned weights (based on their capacity).
+
+# A server with higher weight will handle more requests.
+
+# Good when servers have different processing powers.
+
+# Example:
+# If S1 has weight 3, S2 has 1:
+# Order = S1 → S1 → S1 → S2 → (repeat...)
+
+# 🔁 Simulation Flow:
+# Define a list of servers.
+
+# Generate fake client requests (e.g., 10-20).
+
+# Choose a load balancing algorithm.
+
+# Assign each request to a server based on the algorithm.
+
+# Track and show the number of requests handled by each server.
+
+# 🖼️ Diagram to Add:
+# arduino
+# Copy
+# Edit
+# Client Requests → Load Balancer → [S1, S2, S3...]
+#                     |
+#               Load Balancing Algorithm
+# 🪜 Steps to Perform the Simulation:
+# Create a list of servers with names like S1, S2, etc.
+
+# Generate multiple dummy client requests using a loop.
+
+# Implement 4 functions — one for each load balancing algorithm.
+
+# Track which server each request is going to.
+
+# Display how many requests each server handled at the end.

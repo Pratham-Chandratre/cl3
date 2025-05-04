@@ -1,0 +1,31 @@
+import os #os: Provides functions to interact with the operating system (like reading files, listing directories, etc.).
+import re # re: Python's regular expressions module — useful for pattern matching and text splitting.
+
+os.listdir() #This lists all the files and folders in the current working directory.
+
+def map_reduce(file_name):
+    with open(file_name, "r") as file:  
+        review = file.read()
+        
+    #mapper
+
+# Creates a dictionary where:
+
+# The key is the stripped sentence (whitespace removed from start/end).
+
+# The value is its sentence ID, starting from 1 (i+1).
+
+
+    mapped = re.split(r"[.,!]", review) #Splits the review string into substrings using ., ,, or ! as delimiters. 
+    mapped = {mapped[i].strip():i+1 for i in range(len(mapped))}
+    for doc, doc_id in mapped.items():  #Iterates over the dictionary and prints each sentence with its ID in a formatted way.
+        print(f"doc_ID[{doc_id}]: {doc}")
+    
+    #reducer
+    total_sents = len(mapped)
+    print(f"\ntotal number of sentences : {total_sents}")
+
+map_reduce("sample.txt")
+
+****************************Create a txt fime name sample.txt in same Folder***************************************
+Hello my name is Neel. i am in final year of engineering in AI and DS, It is nice to see you mam! Where have you been? 

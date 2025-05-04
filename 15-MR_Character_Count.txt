@@ -1,0 +1,107 @@
+# word count
+
+# MapReduce is a programming model used for processing large amounts of data in a parallel and distributed way 
+# across multiple machines. It was developed by Google and is supported by the Hadoop framework.
+
+# It has two main phases:
+
+# Map Phase
+
+# Reduce Phase
+
+# 🖥️ What is Hadoop?
+# Hadoop is an open-source framework for:
+
+# Storing large datasets across a distributed file system (HDFS)
+
+# Processing those datasets using MapReduce
+
+# 🧱 Key Components:
+# HDFS (Hadoop Distributed File System):
+# Stores data across multiple machines.
+
+# MapReduce Engine:
+# Processes the data in parallel.
+
+# 📌 How It Works (Step-by-Step)
+# A large text file is uploaded to HDFS.
+
+# Hadoop splits this file into blocks and stores them across different nodes.
+
+# Map function is executed in parallel on each block.
+
+# Output of map tasks (key-value pairs) is shuffled and sorted.
+
+# Reduce function combines values of same key to generate final output.
+
+# Final result is stored back in HDFS.
+
+
+from mrjob.job import MRJob  #This is the main class that allows you to write a MapReduce job in Python.
+import re #This is the main class that allows you to write a MapReduce job in Python.
+
+WORD_REGEXP = re.compile(r"[\w']+")  #WORD_REGEXP is used to find words in each line.
+
+class MRWordCount(MRJob):
+
+    # This is the Map function.
+
+    # It processes each line of the input text.
+
+    # It finds all the words in the line using WORD_REGEXP.
+
+    # Converts each word to lowercase (to avoid case sensitivity).
+
+    # Emits each word with a count of 1, like this:
+    # → "hello" → 1, "world" → 1
+
+    def mapper(self, _, line):
+        for word in WORD_REGEXP.findall(line):
+            yield word.lower(), 1
+
+    # This is the Reduce function.
+
+    # It gets all the 1s associated with a word.
+
+    # It adds them up to get the total number of times the word appears.
+
+    def reducer(self, word, counts):
+        yield word, sum(counts)
+
+if __name__ == '__main__':
+    MRWordCount.run()  # This line tells Python to run the job if this file is executed directly.
+
+
+**************************Character *************************************
+
+from mrjob.job import MRJob
+
+class MRCharCount(MRJob):  # Define a class MRCharCount which inherits from MRJob.
+
+    # This is the Map function.
+
+    # It removes any leading/trailing spaces from the line using .strip().
+
+    # Then it goes through each character in the line.
+
+    # Emits each character with a count of 1.
+    # → 'a' → 1, 'b' → 1
+
+    def mapper(self, _, line):
+        for char in line.strip():
+            yield char, 1
+
+    # This is the Reduce function.
+
+    # It adds up all the 1s for each character to get the total count.
+
+    def reducer(self, char, counts):
+        yield char, sum(counts)
+
+if __name__ == '__main__':
+    MRCharCount.run()
+
+# 13. Hadoop is an open-source framework used for distributed storage and processing of large 
+# datasets across clusters of computers.
+
+

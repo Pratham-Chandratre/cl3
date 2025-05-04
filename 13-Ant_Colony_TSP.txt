@@ -1,0 +1,204 @@
+import numpy as np
+
+# Parameters
+num_cities = 10
+num_ants = 100
+num_iterations = 1000 # We will repeat the process 1000 times to get better solutions.
+alpha = 1 # Controls how much pheromone influences the path.
+beta = 2 # Controls how much distance (or closeness) influences the path.
+evaporation_rate = 0.1 # How fast the pheromone fades over time.
+
+# Initialize pheromone matrix with small positive values
+pheromone_matrix = np.ones((num_cities, num_cities))
+
+# Initialize distance matrix (example with random distances)
+distance_matrix = np.random.randint(1, 100, size=(num_cities, num_cities))
+np.fill_diagonal(distance_matrix, 0)  # No distance from a city to itself
+
+# ACO algorithm
+for iteration in range(num_iterations): 
+    # Ant movement and pheromone update
+    for ant in range(num_ants):
+        tour = []  #Ant’s path is empty at the beginning.
+        visited = set() #Keep track of cities already visited.
+        current_city = np.random.randint(0, num_cities) #Ant starts at a random city.
+        # Add the starting city to both tour and visited.
+        tour.append(current_city)
+        visited.add(current_city)
+        
+        # The ant still needs to visit the remaining cities (e.g., 9 cities if 1 already visited).
+        # This line creates a list of probabilities for moving to each city:
+
+    # For unvisited cities, use this formula:
+
+    # More pheromone = more likely to go.
+
+    # Shorter distance = more likely to go.
+
+    # Multiply pheromone and (1/distance), and raise them to the powers alpha and beta.
+
+    # If city is already visited, probability is 0.
+
+        for _ in range(num_cities - 1):
+            next_city_probabilities = [(pheromone_matrix[current_city][city] ** alpha) * ((1 / distance_matrix[current_city][city]) ** beta) if city not in visited else 0 for city in range(num_cities)]
+            next_city_probabilities /= np.sum(next_city_probabilities)
+            next_city = np.random.choice(num_cities, p=next_city_probabilities)
+            tour.append(next_city)
+            visited.add(next_city)
+            current_city = next_city
+        
+        # Update pheromone matrix
+        tour_length = sum(distance_matrix[tour[i]][tour[i+1]] for i in range(len(tour)-1))
+        pheromone_matrix += (1 / tour_length)
+
+    # Evaporation
+    pheromone_matrix *= (1 - evaporation_rate)
+
+# Find the best solution
+best_tour_length = np.inf
+for ant in range(num_ants):
+    tour_length = sum(distance_matrix[tour[i]][tour[i+1]] for i in range(len(tour)-1))
+    if tour_length < best_tour_length:
+        best_tour_length = tour_length
+
+print("Best tour length:", best_tour_length)
+
+
+# ACO is a nature-inspired algorithm that mimics the way real ants find the shortest path from their nest to a food source.
+# In nature, ants leave behind a chemical trail called pheromones.
+# Other ants smell this trail and follow it — and if the path is good (short and fast), more ants follow, and more pheromones are added, making the path stronger.
+
+# What is the Traveling Salesman Problem (TSP)?
+# The Traveling Salesman Problem is a famous optimization problem.
+# The goal is:
+
+# A salesman must visit all cities exactly once
+
+# And then return to the starting city
+
+# The task is to find the shortest possible route
+
+# How ACO solves TSP:
+# We model the cities as nodes in a graph, and the distances between them as edges.
+
+# ✨ ACO Algorithm Steps:
+# Initialization:
+
+# Define all the cities and distances between them
+
+# Set initial pheromone levels on each path (edge)
+
+# Ant Movement (Solution Construction):
+
+# Each ant starts at a random city
+
+# It moves from one city to another
+
+# The choice is based on:
+
+# How much pheromone is on the path (more = better)
+
+# How short the path is (shorter = better)
+
+# Ant completes a full tour visiting all cities once
+
+# Pheromone Update:
+
+# Pheromones evaporate a bit (to avoid too much buildup)
+
+# Ants that found shorter paths deposit more pheromones
+
+# This encourages future ants to follow better paths
+
+# Repeat:
+
+# Steps 2 and 3 are repeated for many iterations
+
+# Gradually, best paths become stronger
+
+# Eventually, the shortest route is discovered
+
+import numpy as np
+
+# Parameters
+num_cities = 10
+num_ants = 100
+num_iterations = 1000
+alpha = 1                # Importance of pheromone
+beta = 2                 # Importance of distance
+evaporation_rate = 0.1   # Pheromone evaporation rate
+
+# Initialize pheromone matrix with small positive values
+pheromone_matrix = np.ones((num_cities, num_cities))
+
+# Initialize distance matrix (example with random distances)
+distance_matrix = np.random.randint(1, 100, size=(num_cities, num_cities))
+np.fill_diagonal(distance_matrix, 0)  # No distance from a city to itself
+
+# Function to calculate tour length
+def calculate_tour_length(tour):
+    return sum(distance_matrix[tour[i]][tour[i+1]] for i in range(len(tour) - 1)) + distance_matrix[tour[-1]][tour[0]]
+
+# Best tour tracking
+best_tour = None
+best_tour_length = np.inf
+
+# ACO Algorithm
+for iteration in range(num_iterations):
+    all_tours = []
+    all_lengths = []
+
+    # Each ant builds a tour
+    for ant in range(num_ants):
+        tour = []
+        visited = set()
+        current_city = np.random.randint(0, num_cities)
+        tour.append(current_city)
+        visited.add(current_city)
+
+        for _ in range(num_cities - 1):
+            probabilities = []
+            for city in range(num_cities):
+                if city not in visited:
+                    pheromone = pheromone_matrix[current_city][city] ** alpha
+                    visibility = (1 / distance_matrix[current_city][city]) ** beta
+                    probabilities.append(pheromone * visibility)
+                else:
+                    probabilities.append(0)
+
+            probabilities = np.array(probabilities)
+            probabilities /= probabilities.sum()  # Normalize
+            next_city = np.random.choice(num_cities, p=probabilities)
+
+            tour.append(next_city)
+            visited.add(next_city)
+            current_city = next_city
+
+        all_tours.append(tour)
+        length = calculate_tour_length(tour)
+        all_lengths.append(length)
+
+        # Update best tour if found
+        if length < best_tour_length:
+            best_tour_length = length
+            best_tour = tour.copy()
+
+    # Pheromone evaporation
+    pheromone_matrix *= (1 - evaporation_rate)
+
+    # Pheromone update based on tours
+    for tour, length in zip(all_tours, all_lengths):
+        pheromone_deposit = 1 / length
+        for i in range(len(tour) - 1):
+            a, b = tour[i], tour[i + 1]
+            pheromone_matrix[a][b] += pheromone_deposit
+            pheromone_matrix[b][a] += pheromone_deposit  # Symmetric
+
+        # Add pheromone for the return to starting city
+        a, b = tour[-1], tour[0]
+        pheromone_matrix[a][b] += pheromone_deposit
+        pheromone_matrix[b][a] += pheromone_deposit
+
+# Final Result
+print("Best tour length:", best_tour_length)
+print("Best tour:", best_tour)
